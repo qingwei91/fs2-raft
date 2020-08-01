@@ -6,7 +6,7 @@ import cats.effect.concurrent.MVar
 import raft.algebra.io.MetadataIO
 import raft.model.Metadata
 
-class SwayDBPersist[F[_]: Monad](db: swaydb.Map[Int, Metadata, F], lock: MVar[F, Unit]) extends MetadataIO[F] {
+class SwayDBPersist[F[_]: Monad](db: swaydb.Map[Int, Metadata, Nothing, F], lock: MVar[F, Unit]) extends MetadataIO[F] {
   val singleKey = 1
 
   @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))

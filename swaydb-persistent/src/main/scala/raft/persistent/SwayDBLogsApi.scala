@@ -5,7 +5,7 @@ import cats.Functor
 import raft.algebra.io.LogsApi
 import raft.model.RaftLog
 
-class SwayDBLogsApi[F[_]: Functor, Cmd](db: swaydb.Map[Int, RaftLog[Cmd], F]) extends LogsApi[F, Cmd] {
+class SwayDBLogsApi[F[_]: Functor, Cmd](db: swaydb.Map[Int, RaftLog[Cmd], Nothing, F]) extends LogsApi[F, Cmd] {
 
   override def getByIdx(idx: Int): F[Option[Log]] = db.get(idx)
 
@@ -21,7 +21,8 @@ class SwayDBLogsApi[F[_]: Functor, Cmd](db: swaydb.Map[Int, RaftLog[Cmd], F]) ex
     * @param idx - inclusive
     */
   override def takeFrom(idx: Int): F[Seq[Log]] = {
-    db.fromOrAfter(idx).takeWhile(_ => true).map(_._2).materialize
+    implicit val bag = db.bag
+    db.fromOrAfter(idx).stream.map(_._2).materialize.map(_.toSeq)
   }
 
   override def append(log: Log): F[Unit] = db.put(log.idx, log).map(_ => ())

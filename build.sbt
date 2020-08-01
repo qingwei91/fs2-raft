@@ -32,7 +32,7 @@ lazy val swaydbPersisent = project
   .settings(common)
   .settings(
     libraryDependencies ++= Seq(
-      "io.swaydb" %% "swaydb" % "0.8-beta.7"
+      "io.swaydb" %% "swaydb" % swaydbVersion
     )
   )
 
@@ -56,7 +56,8 @@ lazy val examples = project
       "io.circe"              %% "circe-generic"        % circeVersion,
       "io.circe"              %% "circe-parser"         % circeVersion,
       "com.github.pureconfig" %% "pureconfig"           % "0.10.2",
-      "io.swaydb"             %% "swaydb"               % "0.8-beta.7",
+      "io.swaydb"             %% "swaydb"               % swaydbVersion,
+      "io.swaydb"             %% "cats-effect"          % swaydbVersion,
       "io.grpc"               % "grpc-netty"            % scalapb.compiler.Version.grpcJavaVersion,
       "com.thesamet.scalapb"  %% "scalapb-runtime"      % scalapb.compiler.Version.scalapbVersion % "protobuf",
       "com.thesamet.scalapb"  %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
@@ -82,6 +83,7 @@ lazy val examples = project
 
 lazy val http4sVersion = "0.20.0-M5"
 lazy val circeVersion  = "0.11.1"
+lazy val swaydbVersion = "0.14.2"
 lazy val common = Def.settings(
   version := "1.0",
   scalaVersion := "2.12.8",

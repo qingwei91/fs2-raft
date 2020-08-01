@@ -75,24 +75,26 @@ object RaftGrpcExample extends IOApp {
     }
   }
 
+  private implicit val bag = swaydb.cats.effect.Bag.apply
+
   private def logDB: IO[SwayDBLogsApi[IO, Increment]] = {
     val dbPath = Paths.get("raft-sample-log")
-    val db     = swaydb.persistent.Map[Int, RaftLog[Increment]](dbPath)
-    swayDBToCatsIO(db).map { inner =>
-      new SwayDBLogsApi(inner.asyncAPI[IO])
+    val db     = swaydb.persistent.Map[Int, RaftLog[Increment], Nothing, IO](dbPath)
+    db.map { inner =>
+      new SwayDBLogsApi(inner)
     }
   }
 
   private def metadataDB: IO[SwayDBPersist[IO]] = {
     val dbPath = Paths.get("raft-sample-persist")
-    val db     = swaydb.persistent.Map[Int, Metadata](dbPath)
+    val db     = swaydb.persistent.Map[Int, Metadata, Nothing, IO](dbPath)
 
     for {
-      swayMap <- swayDBToCatsIO(db).map(_.asyncAPI[IO])
+      swayMap <- db
       _       <- swayMap.put(1, Metadata.init)
       lock    <- MVar[IO].of(())
     } yield {
-      new SwayDBPersist(swayMap.asyncAPI[IO], lock)
+      new SwayDBPersist(swayMap, lock)
     }
   }
 
